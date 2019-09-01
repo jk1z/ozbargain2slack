@@ -21,6 +21,8 @@ class OzBargain {
             }
         }
 
+        console.log("Ozbargain config loaded: ", JSON.stringify(this.rssUrls, null, 3));
+
         return this;
     }
 

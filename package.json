@@ -9,7 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "chalk": "^2.4.2",
     "lodash": "^4.17.15",
+    "moment-timezone": "^0.5.26",
     "node-cron": "^2.0.3",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.7",

@@ -1,0 +1,8 @@
+version: "3.7"
+services:
+  ozbargain2slack:
+    build: .
+    image: ozbargain2slack
+    environment:
+      - SLACK_WEBHOOK_URL=
+      - RSS_CONFIG=[{"link":"https://www.ozbargain.com.au/cat/electrical-electronics/deals/feed","refreshInterval":15000},{"link":"https://www.ozbargain.com.au/cat/computing/deals/feed","refreshInterval":15000},{"link":"https://www.ozbargain.com.au/cat/dining-takeaway/deals/feed","refreshInterval":15000},{"link":"https://www.ozbargain.com.au/cat/mobile/deals/feed","refreshInterval":15000}]

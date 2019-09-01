@@ -2,31 +2,32 @@ const NodeCron = require("node-cron");
 const _ = require("lodash");
 const { OzBargain } = require("./services/ozbargain");
 const Slack = require("./services/slack");
+const Env = require("./env");
 
 let initialised = false;
 let ready = true;
 let rssFeedSilo = [];
 
-const rssUrls = [
-    {
-        link: "https://www.ozbargain.com.au/cat/electrical-electronics/deals/feed",
-        refreshInterval: 15000
-    },
-    {
-        link: "https://www.ozbargain.com.au/cat/computing/deals/feed",
-        refreshInterval: 15000
-    },
-    {
-        link: "https://www.ozbargain.com.au/cat/dining-takeaway/deals/feed",
-        refreshInterval: 15000
-    },
-    {
-        link: "https://www.ozbargain.com.au/cat/mobile/deals/feed",
-        refreshInterval: 15000
-    }
-];
+// const rssConfig = [
+//     {
+//         link: "https://www.ozbargain.com.au/cat/electrical-electronics/deals/feed",
+//         refreshInterval: 15000
+//     },
+//     {
+//         link: "https://www.ozbargain.com.au/cat/computing/deals/feed",
+//         refreshInterval: 15000
+//     },
+//     {
+//         link: "https://www.ozbargain.com.au/cat/dining-takeaway/deals/feed",
+//         refreshInterval: 15000
+//     },
+//     {
+//         link: "https://www.ozbargain.com.au/cat/mobile/deals/feed",
+//         refreshInterval: 15000
+//     }
+// ];
 
-const ozBargainSubscriber = new OzBargain(rssUrls);
+const ozBargainSubscriber = new OzBargain(Env.RSS_CONFIG);
 
 ozBargainSubscriber.subscribe((item) => {
     let done = false;
@@ -42,7 +43,7 @@ ozBargainSubscriber.subscribe((item) => {
     }
 });
 
-NodeCron.schedule('* * * * *', async () => {
+const task = NodeCron.schedule('* * * * *', async () => {
     if (!initialised){
         rssFeedSilo = [];
         initialised = true;
@@ -80,4 +81,21 @@ exports.decorateRss = (rssItem) => {
             alt_text: "thumbnail image"
         }
     }
+};
+
+process.on("SIGHUP", async () => {
+    await initializeGracefulExit("SIGHUP");
+});
+
+process.on("SIGTERM", async () => {
+    await initializeGracefulExit("SIGTERM");
+});
+
+process.on("SIGINT", async () => {
+    await initializeGracefulExit("SIGINT");
+});
+
+const initializeGracefulExit = async (signal) => {
+    task.destroy();
+    ozBargainSubscriber.subsriber.destroy();
 };
